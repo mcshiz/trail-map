@@ -12,12 +12,15 @@
     <!-- build:css styles/vendor.css -->
     <link rel="stylesheet" href="/app/lib/styles/leaflet.css">
     <!-- bower:css -->
-    <link rel="stylesheet" href="/app/bower_components/sidr/dist/stylesheets/jquery.sidr.dark.min.css">
+    <link rel="stylesheet" href="/app/bower_components/bootstrap/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="/app/bower_components/sidr/dist/stylesheets/jquery.sidr.light.min.css">
     <link rel="stylesheet" href="/app/bower_components/Leaflet.Elevation/dist/Leaflet.Elevation-0.0.2.css">
+    <link rel="stylesheet" href="/app/bower_components/Leaflet.EasyButton/src/easy-button.css">
+    <link rel="stylesheet" href="/app/bower_components/font-awesome/css/font-awesome.min.css">
 
     <!-- endbower -->
     <!-- endbuild -->
-
+    <link rel="stylesheet" href="/app/lib/styles/Leaflet.Photo.css">
     <!-- build:css styles/main.css -->
     <link rel="stylesheet" href="/app/styles/main.css">
     <!-- endbuild -->
@@ -26,29 +29,95 @@
 </head>
 <body>
 
-<header class="group">
-    <div class="shasta-bike-map">
-        Shasta Bike Map
+<!-- Navigation -->
+<nav class="navbar navbar-default" role="navigation">
+    <div class="container">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="#">Mount Shasta Bike Trails</a>
+        </div>
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav">
+                <li>
+                    <a href="#" class="trail-menu-button-nav">Trail Menu</a>
+                </li><li>
+                <a href="#myModal" role="button" class="btn" data-toggle="modal">Contact</a>
+                </li>
+            </ul>
+        </div>
+        <!-- /.navbar-collapse -->
     </div>
-</header>
-
-
+    <!-- /.container -->
+</nav>
 
 {{{body}}}
 
+
+
 <script src='//api.tiles.mapbox.com/mapbox.js/plugins/leaflet-omnivore/v0.2.0/leaflet-omnivore.min.js'></script>
+
 <!-- build:js scripts/vendor.js -->
 <script src="/app/lib/scripts/leaflet.js"></script>
 <!-- bower:js -->
 <script src="/app/bower_components/jquery/dist/jquery.js"></script>
+<script src="/app/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
 <script src="/app/bower_components/sidr/dist/jquery.sidr.min.js"></script>
 <script src="/app/bower_components/Leaflet.Elevation/dist/Leaflet.Elevation-0.0.2.src.js"></script>
-
+<script src="/app/bower_components/leaflet.markercluster/dist/leaflet.markercluster.js"></script>
+<script src="/app/bower_components/Leaflet.EasyButton/src/easy-button.js"></script>
+<script src="/app/bower_components/bootbox.js/bootbox.js"></script>
+<script src="/app/lib/loading.js"></script>
 <!-- endbower -->
 <!-- endbuild -->
+<script src="/app/lib/scripts/Leaflet.Photo.js"></script>
 <!-- build:js scripts/main.js -->
 <script src="/app/scripts/main.js"></script>
 <script src="/app/scripts/GeoLocation.js"></script>
 <!-- endbuild -->
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/require.js/2.0.6/require.min.js"></script>
+<script>
+    require(["http://shanimal.com/_js/jpegmeta.js"],function(jpegmeta){});
+    $("#filebtn").click(function(){
+        var files;
+        var exif;
+        var fbtn = $('<input type="file" multiple="multiple" accept="image/jpeg" />');
+        fbtn.unbind().on("change",function(){
+            function check(){
+                // check if each picture has lat & lon, alert users with filenames that don't
+//                if(_.reject(results,_.identity).length)
+//                    return;
+                console.log("Display EXIF data:",results);
+                console.log("Display EXIF data:",results[0].exif.gps.latitude.value);
+                console.log("Display EXIF data:",results[0].exif.gps.longitude.value);
+                console.log("Display EXIF data:",results[0].exif.tiff.DateTime.value);
+                $("#stdout").html("EXIF Data Retrieved. (See console for detailed information)")
+            }
+            files = $(this).get(0).files;
+            var results = new Array(files.length)
+            $.each(files,function(i, file){
+                var bin = new FileReader();
+                bin.onloadend = function(){
+                    var exif = new JpegMeta.JpegFile(this.result, this.file.name);
+                    results[i] = {file:file,exif:exif};
+                    check();
+                };
+                bin.file = file;
+                bin.readAsBinaryString(file);
+            })
+
+        });
+        fbtn.click()
+    })
+
+
+</script>
 </body>
 </html>

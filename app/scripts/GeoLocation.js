@@ -4,19 +4,47 @@
 var GeoLocation = (function(callback) {
     var options = {
         enableHighAccuracy : true,
-        timeout : 1000
+        timeout : 1500
     };
+    var watchOptions =  {
+        enableHighAccuracy: true,
+        timeout: 5000,
+        maximumAge: 0
+    };
+    function watchLocation() {
+        navigator.geolocation.watchPosition(success,error, watchOptions)
+    }
+    function error(err) {
+        console.warn('ERROR(' + err.code + '): ' + err.message);
+        GeoLocation.watching = false;
+        $('.geolocate-status').text(" Off");
+        $('.geolocate-symbol').removeClass("btn-active");
+    }
+    function success(position){
+        GeoLocation.userLocation = {
+            lat: position.coords.latitude,
+            lng: position.coords.longitude };
+        mapModule.updatePosition(position);
+        GeoLocation.watching = position;
+        $('.geolocate-status').text(" On")
+    }
+    function stopWatching(){
+        navigator.geolocation.clearWatch(GeoLocation.watching);
+        GeoLocation.watching = false;
+        $('.geolocate-status').text(" Off")
+    }
     function getLocation(position) {
         console.log(position);
         document.cookie = "geoLocation=true";
         GeoLocation.userLocation = {
             lat: position.coords.latitude,
             lng: position.coords.longitude };
+        GeoLocation.canWatch = true;
         callback(window, document, L)
 
     }
     function fallback(error) {
-        console.log("GeoLoacation Error:", error.message);
+        console.log("GeoLocation Error:", error.message);
         console.log("using double fallback location");
 
         $.ajax({
@@ -42,9 +70,7 @@ var GeoLocation = (function(callback) {
 
                 })
             }
-
         });
-
     }
     if (navigator && navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(getLocation, fallback, options);
@@ -57,7 +83,11 @@ var GeoLocation = (function(callback) {
         userLocation : {
             lng: -121.904297,
             lat: 42.0390942
-        }
+        },
+        canWatch : false,
+        watching: false,
+        watchLocation: watchLocation,
+        stopWatching: stopWatching
     }
 
 })(mapModule.init);
