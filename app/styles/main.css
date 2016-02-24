@@ -19,13 +19,11 @@ html {
 }
 .map {
 	width: 100%;
-	height: 100%;
+	height: 90vh;
 }
 
 .map-application {
 	height: 100%;
-
-	padding-top: 50px;
 
 }
 
@@ -48,11 +46,149 @@ header .appName {
 	cursor: pointer;
 }
 .menu-item:hover {
-	color: cadetblue;
+	color: rgba(255, 0, 0, 0.5);
 }
 path.area {
-	fill: cadetblue;
+	fill: rgba(255, 0, 0, 0.5);
 }
 .x.axis {
 	display: none;
+}
+.trail-menu-button , .geolocate-button {
+	z-index: 99;
+	position: absolute;
+	top: 115px;
+	left: 25px;
+	padding: 4px 5px 5px 5px;
+	background: white;
+	border-radius: 4px;
+	box-shadow: 0 1px 5px rgba(0,0,0,0.65);
+	width: 26px;
+	height: 26px;
+	overflow: hidden;
+	white-space: nowrap;
+	cursor: pointer;
+	display: none;
+}
+
+.geolocate-button{
+	top: 75px;
+}
+.trail-menu-button a, .geolocate-button a {
+	margin-left: 5px;
+	text-decoration: none;
+	color: black;
+	font-size: 16px;
+	line-height: 16px;
+}
+.trail-menu-button span, .geolocate-button span {
+	margin-left: 2px;
+}
+
+.trail-menu-button:hover, .geolocate-button:hover {
+	width: 110px;
+	background-color: #f4f4f4;
+	transition:width .4s ease-in-out;
+}
+.geolocate-button:hover {
+	width: 170px;
+}
+.btn-active {
+-webkit-animation: scaleout 2.5s infinite ease-in-out;
+animation: scaleout 2.5s infinite ease-in-out;
+}
+
+
+
+@keyframes scaleout {
+	0% {
+		transform: scale(0.5);
+		-webkit-transform: scale(0.5);
+	}
+	50% {
+		  transform: scale(1.0);
+		  -webkit-transform: scale(1.0);
+		  opacity: 0.5;
+	}
+	100% {
+		transform: scale(0.5);
+		-webkit-transform: scale(0.5);
+		opacity: 0.25;
+	}
+}
+
+.sidr-close-button .fa {
+	font-size: 1.5em;
+}
+.sidr .sidr-close-button{
+	padding: 10px;
+	cursor: pointer;
+}
+.sidr .sidr-close-button:hover{
+	color: rgba(255, 0, 0, 0.5)
+}
+.sidr ul li a {
+	padding-left: 0;
+	display: block;
+ 	text-decoration: inherit;
+	color: rgb(0, 157, 255);
+
+}
+.sidr ul li {
+	line-height: 28px;
+	padding-top: 10px;
+	padding-bottom: 10px;
+
+}
+.sidr ul li:hover>a {
+	box-shadow: none;
+}
+.sidr ul li a:hover {
+	text-decoration: underline;
+}
+
+.sidr ul li:hover, .sidr ul li.active, .sidr ul li.sidr-class-active {
+	border-top: inherit;
+	line-height: 28px;
+	-webkit-box-shadow: inset 0px 0px 30px -5px rgba(56, 56, 56, 1);
+	-moz-box-shadow: inset 0px 0px 30px -5px rgba(56, 56, 56, 1);
+	box-shadow: inset 0px 0px 30px -5px rgba(56, 56, 56, 1);
+}
+canvas {
+	bottom: 0;
+	left: 0;
+	margin: auto;
+	position: absolute;
+	right: 0;
+	top: 25vh;
+}
+
+.modal {
+	position: fixed;
+	right: 0;
+	top: 40px;
+}
+.modal-header,
+.btn-custom {
+	background: #1ABC9C;
+	color: #FFF;
+	/* margin-right: 10px; */
+}
+.modal-body {
+	background: #73BFC1;
+}
+.popover   {
+	background-color: #e74c3c;
+	color: #ecf0f1;
+	width: 120px;
+}
+.popover.right .arrow:after {
+	border-right-color: #e74c3c;
+}
+.input-group[class*="col-"] {
+	padding-right: 15px;
+	padding-left: 15px;
+}
+.map-container.single .map {
+	height:300px;
 }

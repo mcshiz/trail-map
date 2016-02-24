@@ -10,20 +10,54 @@ var mapModule = (function (window, document, L, undefined) {
 		L.Icon.Default.imagePath = '/app/images/';
 
 		/* create leaflet map */
-		var map = L.map('map', {
-			center: [GeoLocation.userLocation.lat, GeoLocation.userLocation.lng],
-			zoom: 12
-		});
+		var map = L.map('map');
+		map.on('load', function(){
+			$('.trail-menu-button, .geolocate-button').show()
+			$(canvas).remove();
 
+		})
+		map.setView([GeoLocation.userLocation.lat, GeoLocation.userLocation.lng], 12);
 		new L.tileLayer('http://{s}.tile.stamen.com/terrain/{z}/{x}/{y}.png', {
 			minZoom: 0,
 			maxZoom: 18,
 			attribution: 'Map data © <a href="http://www.openstreetmap.org">OpenStreetMap contributors</a>'
 		}).addTo(map);
-		//add geolocation marker
-		L.marker([GeoLocation.userLocation.lat, GeoLocation.userLocation.lng]).addTo(map);
 
-		mapOptions.el = L.control.elevation({
+		mapOptions.map = map;
+		var photos = [{
+			lng:-122.313225,
+			lat:41.31577222222222,
+			url:"http://i1.adis.ws/i/washford/01-bikes-mtb-thumbnail?$cat_nav$",
+			caption:"work bitch",
+			thumbnail:"http://i1.adis.ws/i/washford/01-bikes-mtb-thumbnail?$cat_nav$",
+			video: ""
+		}];
+
+
+		var photoLayer = L.photo.cluster().on('click', function (evt) {
+			var photo = evt.layer.photo,
+				template = '<img src="{url}"/></a><p>{caption}</p>';
+			if (photo.video && (!!document.createElement('video').canPlayType('video/mp4; codecs=avc1.42E01E,mp4a.40.2'))) {
+				template = '<video autoplay controls poster="{url}"><source src="{video}" type="video/mp4"/></video>';
+			};
+			evt.layer.bindPopup(L.Util.template(template, photo), {
+				className: 'leaflet-popup-photo',
+				minWidth: 400
+			}).openPopup();
+		});
+		photoLayer.add(photos).addTo(map)
+
+
+        //
+
+		mapOptions.updatePosition = function(position){
+			map.removeLayer(mapOptions.geolocationMarker);
+			mapOptions.geolocationMarker.setLatLng([GeoLocation.userLocation.lat, GeoLocation.userLocation.lng]).addTo(map);
+		};
+		//add geolocation marker
+		mapOptions.geolocationMarker = L.marker([GeoLocation.userLocation.lat, GeoLocation.userLocation.lng]).addTo(map);
+
+		mapOptions.elevationProfile = L.control.elevation({
 			position: "bottomleft",
 			theme: "steelblue-theme",
 			width: 600,
@@ -46,7 +80,7 @@ var mapModule = (function (window, document, L, undefined) {
 			collapsed: false    //collapsed mode, show chart on click or mouseover
 		}).addTo(map);
 
-		mapOptions.trailGroup = new L.layerGroup();
+		mapOptions.trailGroup = new L.featureGroup();
 		var customLayer = L.geoJson(null, {
 			// http://leafletjs.com/reference.html#geojson-style
 			style: function(feature) {
@@ -62,31 +96,35 @@ var mapModule = (function (window, document, L, undefined) {
 				layer.setStyle({
 					color: "black",
 					className: "trailLayer"
-				})
+				});
 				layer.on("click", function(e){
-
 					mapOptions.showFeature(layer);
-					// open trail details
 					trailMenu.openMenu();
 				})
 				.on("mouseover", function(){
-					if(!feature.properties.selected) {
-						layer.setStyle({
-							color: "red"
-						})
-					}
+					if(!feature.properties.selected) layer.setStyle({color: "red"})
 				})
 				.on("mouseout", function(){
-					if(!feature.properties.selected) {
-						layer.setStyle({
-							color: "black"
-						})
-					}
+					if(!feature.properties.selected) layer.setStyle({color: "black"})
 				})
 			}
 		}).addTo(map);
 
-		mapOptions.highlightLayer = function(layer){
+		mapOptions.highlightLayer = function(trailLayer){
+			var layer = null,
+				feature = null;
+			if(typeof trailLayer  === "string") {
+				$.each(mapOptions.trailGroup._layers, function(key, l){
+					if(trailLayer === l.feature.properties.name) {
+						layer = l;
+						feature = l.feature;
+						return false;
+					}
+				});
+			} else {
+				layer = trailLayer;
+				feature = trailLayer.feature;
+			}
 			mapOptions.unhighlightLayer();
 			// prevent clicking then immediately changing color to black "on mouse out"
 			layer.feature.properties.selected = true;
@@ -96,8 +134,28 @@ var mapModule = (function (window, document, L, undefined) {
 		};
 		mapOptions.unhighlightLayer = function(){
 			mapOptions.trailGroup.eachLayer(function(layer){
+				layer.feature.properties.selected = false;
 				layer.setStyle({
 					color: "black"
+				})
+			});
+		};
+		mapOptions.previewColor = function(trailLayer){
+			$.each(mapOptions.trailGroup._layers, function(key, l){
+				if(typeof trailLayer  === "string") {
+					$.each(mapOptions.trailGroup._layers, function (key, l) {
+						if (trailLayer === l.feature.properties.name) l.setStyle({color: "red"})
+					})
+				}
+
+			});
+		};
+		mapOptions.baseColor = function(){
+			var baseColor = "black";
+			mapOptions.trailGroup.eachLayer(function(layer){
+				layer.feature.properties.selected === true ?  baseColor = "blue": baseColor = "black";
+				layer.setStyle({
+					color: baseColor
 				})
 			});
 		};
@@ -125,8 +183,9 @@ var mapModule = (function (window, document, L, undefined) {
 				feature = layer.feature;
 			}
 			mapOptions.highlightLayer(layer);
-			mapOptions.el.clear();
-			mapOptions.el.addData(feature, layer);
+			mapOptions.elevationProfile.clear();
+			mapOptions.elevationProfile.addData(feature, layer);
+			mapOptions.elevationProfile.show()
 			map.fitBounds(layer.getBounds())
 
 		};
@@ -145,38 +204,75 @@ var trailMenu = (function(){
 	};
 	var menu = $('#trail-menu-list');
 	options.addListitem = function(trail, mapLayer, map){
-		var newListItem = '<li class="menu-item" data-feature="'+trail.properties.name+'">'+trail.properties.name+'</li>';
+		var newListItem = '<li class="menu-item" data-feature="'+trail.properties.name+'">'+trail.properties.name+'<a href="#" class="show-trail-details">View Details</a></li>';
 		$(menu).append(newListItem);
 	};
 
 	options.openMenu = function(){
-			options.sidr.opened = false;
-			$("#tmenu").sidr({
-				side: 'right',
-				displace: false
-			});
+			options.sidr.opened = true;
 			$.sidr('open', 'sidr');
-			mapModule.el.show()
+
 	};
 	options.closeMenu = function(){
+			options.sidr.opened = false;
 			$.sidr('close', 'sidr');
-			mapModule.el.hide()
+			mapModule.elevationProfile.hide();
+			mapModule.map.fitBounds(mapModule.trailGroup.getBounds())
 	};
 	return options;
 }());
 
-
-
 $(document).on('click', '.menu-item', function(){
 	mapModule.showFeature($(this).data('feature'));
 });
-
+$(document).on('mouseover', '.menu-item', function(){
+	mapModule.previewColor($(this).data('feature'))
+});
+$(document).on('mouseout', '.menu-item', function(){
+	mapModule.baseColor()
+});
 $(document).on('click', function (e){
-	var elevationWindow = $(e.target).parents('.elevation.leaflet-control').length > 0 ? true : false;
-	var trailLayer = $(e.target).hasClass('.trailLayer');
-	var container = $("#sidr");
-	if (!container.is(e.target) && container.has(e.target).length === 0 && !elevationWindow && !trailLayer) {
+	var elevationWindow = $(e.target).parents('.elevation.leaflet-control').length > 0,
+		trailLayer = $('.trail-menu-button'),
+		geolocateButton = $('.geolocate-button'),
+		container = $("#sidr")
+	if ((!container.is(e.target)
+			&& container.has(e.target).length === 0)
+			&& !elevationWindow && !trailLayer.is(e.target)
+			&& trailLayer.has(e.target).length === 0
+			&& !geolocateButton.is(e.target)
+			&& geolocateButton.has(e.target).length === 0
+			&& trailMenu.sidr.opened)
+	{
 		trailMenu.closeMenu();
 		mapModule.unhighlightLayer();
 	}
+});
+$(".trail-menu-button, .trail-menu-button-nav").on('click', function(e){
+	e.preventDefault();
+	trailMenu.openMenu();
+});
+$(".geolocate-button").on('click', function(e) {
+	e.preventDefault();
+	if(GeoLocation.canWatch) {
+		$(".geolocate-symbol").toggleClass('btn-active');
+		if(GeoLocation.watching !== false){
+			GeoLocation.stopWatching();
+		} else {
+			GeoLocation.watchLocation();
+		}
+	} else {
+		bootbox.alert("<span class='fa fa-exclamation-triangle'> Sorry, location isn't supported on yor device</span>");
+	}
+
+
+});
+$(".sidr-close-button").on('click', function(e){
+	trailMenu.closeMenu();
+	mapModule.unhighlightLayer();
+});
+//initialize sidr
+$("#tmenu").sidr({
+	side: 'right',
+	displace: false
 });

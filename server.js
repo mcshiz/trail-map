@@ -1,4 +1,3 @@
-
 'use strict';
 
 var express = require('express'),
@@ -14,6 +13,9 @@ app.engine('.hbs', exphbs({layoutsDir: __dirname +'/app/views' , defaultLayout: 
 
 app.get('/', function (req, res) {
     res.render('index');
+});
+app.get(/^\/trail\/(.+)$/, function (req, res) {
+    res.render('single');
 });
 
 app.listen(3000, function () {
