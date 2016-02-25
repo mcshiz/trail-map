@@ -55,4 +55,4 @@ ctx.translate( cx, cy );
     tick++;
 })();
 
-document.body.appendChild( canvas );
+$('.map-application').append( canvas );

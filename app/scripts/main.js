@@ -14,8 +14,7 @@ var mapModule = (function (window, document, L, undefined) {
 		map.on('load', function(){
 			$('.trail-menu-button, .geolocate-button').show()
 			$(canvas).remove();
-
-		})
+		});
 		map.setView([GeoLocation.userLocation.lat, GeoLocation.userLocation.lng], 12);
 		new L.tileLayer('http://{s}.tile.stamen.com/terrain/{z}/{x}/{y}.png', {
 			minZoom: 0,
@@ -47,14 +46,10 @@ var mapModule = (function (window, document, L, undefined) {
 		});
 		photoLayer.add(photos).addTo(map)
 
-
-        //
-
 		mapOptions.updatePosition = function(position){
 			map.removeLayer(mapOptions.geolocationMarker);
 			mapOptions.geolocationMarker.setLatLng([GeoLocation.userLocation.lat, GeoLocation.userLocation.lng]).addTo(map);
 		};
-		//add geolocation marker
 		mapOptions.geolocationMarker = L.marker([GeoLocation.userLocation.lat, GeoLocation.userLocation.lng]).addTo(map);
 
 		mapOptions.elevationProfile = L.control.elevation({
@@ -204,7 +199,8 @@ var trailMenu = (function(){
 	};
 	var menu = $('#trail-menu-list');
 	options.addListitem = function(trail, mapLayer, map){
-		var newListItem = '<li class="menu-item" data-feature="'+trail.properties.name+'">'+trail.properties.name+'<a href="#" class="show-trail-details">View Details</a></li>';
+		var url = trail.properties.name.replace(' Trail', '');
+		var newListItem = '<li class="menu-item" data-feature="'+trail.properties.name+'">'+trail.properties.name+'<a href="/trail/'+url+'" class="show-trail-details">View Details</a></li>';
 		$(menu).append(newListItem);
 	};
 
@@ -234,14 +230,17 @@ $(document).on('mouseout', '.menu-item', function(){
 $(document).on('click', function (e){
 	var elevationWindow = $(e.target).parents('.elevation.leaflet-control').length > 0,
 		trailLayer = $('.trail-menu-button'),
+		taillLayerNav = $('.trail-menu-button-nav'),
 		geolocateButton = $('.geolocate-button'),
-		container = $("#sidr")
+		container = $("#sidr");
 	if ((!container.is(e.target)
 			&& container.has(e.target).length === 0)
 			&& !elevationWindow && !trailLayer.is(e.target)
 			&& trailLayer.has(e.target).length === 0
 			&& !geolocateButton.is(e.target)
 			&& geolocateButton.has(e.target).length === 0
+			&& !taillLayerNav.is(e.target)
+			&& taillLayerNav.has(e.target).length === 0
 			&& trailMenu.sidr.opened)
 	{
 		trailMenu.closeMenu();
@@ -264,9 +263,8 @@ $(".geolocate-button").on('click', function(e) {
 	} else {
 		bootbox.alert("<span class='fa fa-exclamation-triangle'> Sorry, location isn't supported on yor device</span>");
 	}
-
-
 });
+
 $(".sidr-close-button").on('click', function(e){
 	trailMenu.closeMenu();
 	mapModule.unhighlightLayer();
