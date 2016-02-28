@@ -76,7 +76,7 @@ gulp.task('connect', function(){
 });
 
 // Open
-gulp.task('serve', ['connect'], function() {
+gulp.task('serve', function() {
   open("http://localhost:3000");
 });
 

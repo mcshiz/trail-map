@@ -17,7 +17,12 @@
     <link rel="stylesheet" href="/app/bower_components/Leaflet.Elevation/dist/Leaflet.Elevation-0.0.2.css">
     <link rel="stylesheet" href="/app/bower_components/Leaflet.EasyButton/src/easy-button.css">
     <link rel="stylesheet" href="/app/bower_components/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/app/bower_components/jquery-comments/css/jquery-comments.css">
 
+    <!-- endbower -->
+    <!-- bower:js -->
+    <script src="/app/bower_components/jquery/dist/jquery.js"></script>
+    <script src="/app/bower_components/firebase/firebase.js"></script>
     <!-- endbower -->
     <!-- endbuild -->
     <link rel="stylesheet" href="/app/lib/styles/Leaflet.Photo.css">
@@ -46,9 +51,14 @@
         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
             <ul class="nav navbar-nav">
                 <li>
-                    <a href="#" class="trail-menu-button-nav">Trail Menu</a>
-                </li><li>
-                <a href="#myModal" role="button" class="btn" data-toggle="modal">Contact</a>
+                    <a href="#" class="trail-menu-button-nav text-center">Trail Menu</a>
+                </li>
+                <li>
+                    <a href="#myModal" role="button" class="text-center" data-toggle="modal">Contact</a>
+                </li>
+                <li>
+                    <a style="display:none" href="#loginPassword" class="login-link text-center" role="button" data-toggle="modal">Login</a>
+                    <a style="display: none" class='logout-link text-center' role="button">Logout</a>
                 </li>
             </ul>
         </div>
@@ -69,7 +79,7 @@
                 <h4 class="modal-title">Contact Form</h4>
             </div>
             <div class="modal-body">
-                <form class="form-horizontal" name="commentform" method="post" action="send_form_email.php">
+                <form id="contactForm" class="form-horizontal" name="commentform" method="post">
                     <div class="form-group">
                         <label class="control-label col-md-4" for="first_name">First Name</label>
                         <div class="col-md-6">
@@ -107,6 +117,52 @@
 </div><!-- End of Modal -->
 
 
+<!-- Modal -->
+<div id="loginPassword" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title">Login</h4>
+            </div>
+            <div class="modal-body">
+                <form class="form-horizontal" name="loginform" id="loginform" action="login(this)">
+                    <div class="form-group">
+                        <label class="control-label col-md-4" for="email">Email</label>
+                        <div class="col-md-6">
+                            <input type="email" class="form-control" id="email-login" name="email" placeholder="email"/>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-md-4" for="password">Password</label>
+                        <div class="col-md-6">
+                            <input type="password" class="form-control" id="password-login" name="password" placeholder="Password"/>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-10">
+                            <button type="submit" id="login-button" class="btn btn-success pull-right">Submit</button>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-12 text-center"><b> - OR -</b></div>
+                        <div class="col-xs-12 text-center"><button id="facebook-login" style="margin-top: 15px;background-color: transparent;border: none;"><img src="http://i.stack.imgur.com/LKMP7.png" alt=""/></button></div>
+                    </div>
+                </form>
+
+            </div><!-- End of Modal body -->
+        </div><!-- End of Modal content -->
+    </div><!-- End of Modal dialog -->
+</div><!-- End of Modal -->
+
+
+
+<div id="sidr">
+    <div class="sidr-close-button"><span class="fa fa-close"></span> Close</div>
+    <ul id="trail-menu-list"></ul>
+</div>
+
+
 <script src='//api.tiles.mapbox.com/mapbox.js/plugins/leaflet-omnivore/v0.2.0/leaflet-omnivore.min.js'></script>
 
 <!-- build:js scripts/vendor.js -->
@@ -119,6 +175,10 @@
 <script src="/app/bower_components/leaflet.markercluster/dist/leaflet.markercluster.js"></script>
 <script src="/app/bower_components/Leaflet.EasyButton/src/easy-button.js"></script>
 <script src="/app/bower_components/bootbox.js/bootbox.js"></script>
+<script src="/app/bower_components/jquery.cookie/jquery.cookie.js"></script>
+
+<script src="/app/bower_components/jquery-comments/js/jquery-comments.js"></script>
+
 <script src="/app/lib/loading.js"></script>
 <!-- endbower -->
 <!-- endbuild -->
@@ -164,6 +224,18 @@
     })
 
 
+</script>
+<script>
+    var rating = $('.rating'),
+        a = Math.floor(rating.data('rating')),
+        b = rating.data('rating') - a,
+        full = '<span class="fa fa-star"></span>',
+        half = '<span class="fa fa-star-half"></span>';
+    for(var i = a ; a > 0; i--){
+        $(rating).append(full);
+        --a;
+    }
+    if(b>0) $(rating).append(half);
 </script>
 </body>
 </html>

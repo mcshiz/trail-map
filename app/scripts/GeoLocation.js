@@ -90,4 +90,4 @@ var GeoLocation = (function(callback) {
         stopWatching: stopWatching
     }
 
-})(mapModule.init);
+});
