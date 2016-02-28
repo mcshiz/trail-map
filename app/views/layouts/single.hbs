@@ -10,22 +10,23 @@
 </div>
 <div class="container map-container single">
     <div class="row">
-        <div class="col-xs-12 col-sm-4">
+        <div class="col-xs-12 col-sm-6 col-md-4">
             <div class="map-application">
                 <div id="map" class="map"></div>
+                <div class="wrapper enable-pan-button">
+                    <span class="fa fa-arrows"></span>
+                    <a href="#" title="Enable Map Panning"> Enable Panning</a>
+                </div>
             </div>
         </div>
-        <div class="col-xs-12 col-sm-8 trail-details-container">
+        <div class="col-xs-12 col-sm-6 col-md-8 trail-details-container">
             {{> trail-details}}
         </div>
-    </div>
-    <div class="row">
-        <div class="col-xs-12">
+        <div class="col-xs-12 " style="height: 170px">
             <h3 style="margin-bottom: 0">Elevation Profile</h3><span>Hover to show location on map</span>
-        </div>
-        <div class="col-xs-12" style="height: 130px">
             <div id="elevation-div"></div>
         </div>
+
     </div>
 </div>
 <div class="container">
@@ -56,6 +57,24 @@
         });
         $('#loginPassword').on('hidden.bs.modal', function () {
             $(this).find('.bg-danger').remove();
+        });
+        $('.enable-pan-button').on('click', function(){
+            if($(this).hasClass('active')) {
+//                $(this).children(a).text("Disable Panning")
+                mapModule.map.dragging.disable();
+                mapModule.map.touchZoom.disable();
+                mapModule.map.doubleClickZoom.disable();
+                mapModule.map.scrollWheelZoom.disable();
+                mapModule.map.keyboard.disable();
+            } else {
+//                $(this).children(a).text("Enable Panning");
+                mapModule.map.dragging.enable();
+                mapModule.map.touchZoom.enable();
+                mapModule.map.doubleClickZoom.enable();
+                mapModule.map.scrollWheelZoom.enable();
+                mapModule.map.keyboard.enable();
+            }
+            $(this).toggleClass('active');
         });
 
         commentModule.firebaseRef.onAuth(function(authData) {

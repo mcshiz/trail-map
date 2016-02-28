@@ -12,7 +12,7 @@ var mapModule = (function (window, document, L, undefined) {
 		/* create leaflet map, add layers, show users location */
 		mapOptions.map = L.map('map');
 		mapOptions.map.on('load', function () {
-			$('.trail-menu-button, .geolocate-button').show()
+			$('.trail-menu-button, .geolocate-button').show();
 			$(canvas).remove();
 		});
 
@@ -43,6 +43,8 @@ var mapModule = (function (window, document, L, undefined) {
 					mapOptions.map.doubleClickZoom.disable();
 					mapOptions.map.scrollWheelZoom.disable();
 					mapOptions.map.keyboard.disable();
+					$('.enable-pan-button').show();
+
 				} else {
 					mapModule.placeElevationProfile('main');
 					mapOptions.map.fitBounds(mapOptions.trailGroup.getBounds());

@@ -43,7 +43,7 @@ path.area {
 .x.axis {
 	display: none;
 }
-.trail-menu-button , .geolocate-button {
+.trail-menu-button , .geolocate-button, .enable-pan-button {
 	z-index: 99;
 	position: absolute;
 	top: 115px;
@@ -60,27 +60,30 @@ path.area {
 	display: none;
 }
 
-.geolocate-button{
+.geolocate-button, .enable-pan-button{
 	top: 75px;
 }
-.trail-menu-button a, .geolocate-button a {
+.trail-menu-button a, .geolocate-button a, .enable-pan-button a {
 	margin-left: 5px;
 	text-decoration: none;
 	color: black;
 	font-size: 16px;
 	line-height: 16px;
 }
-.trail-menu-button span, .geolocate-button span {
+.trail-menu-button span, .geolocate-button span, .enable-pan-button span {
 	margin-left: 2px;
 }
 
-.trail-menu-button:hover, .geolocate-button:hover {
+.trail-menu-button:hover, .geolocate-button:hover, .enable-pan-button:hover {
 	width: 110px;
 	background-color: #f4f4f4;
 	transition:width .4s ease-in-out;
 }
 .geolocate-button:hover {
 	width: 170px;
+}
+.enable-pan-button:hover {
+	width: 150px;
 }
 .btn-active {
 -webkit-animation: scaleout 2.5s infinite ease-in-out;
