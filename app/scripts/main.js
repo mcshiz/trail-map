@@ -7,7 +7,7 @@ var mapModule = (function (window, document, L, undefined) {
 	var map = null;
 	mapOptions.init = function(window, document, L, undefined) {
 		L.Icon.Default.imagePath = '/app/images/';
-		mapOptions.fileArray = ["gateway", "8-mile"];
+		mapOptions.fileArray = ['gateway', '8-mile'];
 
 		/* create leaflet map, add layers, show users location */
 		mapOptions.map = L.map('map');
@@ -24,7 +24,7 @@ var mapModule = (function (window, document, L, undefined) {
 
 
 		$.each(mapOptions.fileArray, function (key, val) {
-			mapOptions.trail = omnivore.kml('/app/layers/' + val + '.kml', null, mapOptions.customLayer)
+			mapOptions.trail = omnivore.kml('/app/layers/' + val + '.kml', null, mapOptions.customLayer);
 		});
 
 		mapOptions.customLayer.addTo(mapOptions.map);
@@ -36,23 +36,29 @@ var mapModule = (function (window, document, L, undefined) {
 				if (window.location.pathname.match(/\/.+/)) {
 					mapModule.singleView = true;
 					mapModule.placeElevationProfile();
-					var feature = decodeURI(window.location.pathname).replace("/", "");
-					mapModule.showFeature(feature)
+					var feature = decodeURI(window.location.pathname).replace('/', '');
+					mapModule.showFeature(feature);
 					mapOptions.map.dragging.disable();
 					mapOptions.map.touchZoom.disable();
 					mapOptions.map.doubleClickZoom.disable();
 					mapOptions.map.scrollWheelZoom.disable();
 					mapOptions.map.keyboard.disable();
 					$('.enable-pan-button').show();
-
 				} else {
 					mapModule.placeElevationProfile('main');
 					mapOptions.map.fitBounds(mapOptions.trailGroup.getBounds());
 				}
 			}
-		})
+		});
 
 	};
+
+
+
+
+
+
+
 
 
 		//geotag photo stuff
@@ -80,13 +86,13 @@ var mapModule = (function (window, document, L, undefined) {
 		//});
 		//photoLayer.add(photos).addTo(map)
 
-		mapOptions.updatePosition = function(position){
+		mapOptions.updatePosition = function(){
 			mapOptions.map.removeLayer(mapOptions.geolocationMarker);
 			mapOptions.geolocationMarker.setLatLng([GeoLocation.userLocation.lat, GeoLocation.userLocation.lng]).addTo(mapOptions.map);
 		};
 		mapOptions.elevationProfile = L.control.elevation({
-			position: "bottomleft",
-			theme: "steelblue-theme",
+			position: 'bottomleft',
+			theme: 'steelblue-theme',
 			width: $('#elevation-div').length ? $('#elevation-div').outerWidth() : Math.min($('#map').outerWidth(), 600),
 			height: 125,
 			margins: {
@@ -96,7 +102,7 @@ var mapModule = (function (window, document, L, undefined) {
 				left: 0
 			},
 			useHeightIndicator: true, //if false a marker is drawn at map position
-			interpolation: "linear", //see https://github.com/mbostock/d3/wiki/SVG-Shapes#wiki-area_interpolate
+			interpolation: 'linear', //see https://github.com/mbostock/d3/wiki/SVG-Shapes#wiki-area_interpolate
 			hoverNumber: {
 				decimalsX: 3, //decimals on distance (always in km)
 				decimalsY: 0, //deciamls on height (always in m)
@@ -108,8 +114,8 @@ var mapModule = (function (window, document, L, undefined) {
 		});
 
 		mapOptions.placeElevationProfile = function(view){
-			if(view === "main"){
-				mapOptions.elevationProfile.addTo(mapOptions.map)
+			if(view === 'main'){
+				mapOptions.elevationProfile.addTo(mapOptions.map);
 			}  else {
 				var container = mapOptions.elevationProfile.onAdd(mapOptions.map);
 				document.getElementById('elevation-div').appendChild(container);
@@ -120,7 +126,7 @@ var mapModule = (function (window, document, L, undefined) {
 		mapOptions.trailGroup = L.featureGroup();
 		mapOptions.customLayer = L.geoJson(null, {
 			// http://leafletjs.com/reference.html#geojson-style
-			style: function(feature) {
+			style: function() {
 				return {
 					color: '#f00'
 				};
@@ -131,26 +137,27 @@ var mapModule = (function (window, document, L, undefined) {
 				trailMenu.addListitem(feature, layer, map);
 				//add classname for click detection
 				layer.setStyle({
-					color: "black",
-					className: "trailLayer"
+					color: 'darkblue',
+					opacity: 1,
+					className: 'trailLayer'
 				});
-				layer.on("click", function(e){
+				layer.on('click', function(){
 					mapOptions.showFeature(layer);
 					trailMenu.openMenu();
 				})
-				.on("mouseover", function(){
-					if(!feature.properties.selected) layer.setStyle({color: "red"})
+				.on('mouseover', function(){
+					if(!feature.properties.selected) { layer.setStyle({color: 'red'}); }
 				})
-				.on("mouseout", function(){
-					if(!feature.properties.selected) layer.setStyle({color: "black"})
-				})
+				.on('mouseout', function(){
+					if(!feature.properties.selected) { layer.setStyle({color: 'darkblue'}); }
+				});
 			}
 		});
 
 		mapOptions.highlightLayer = function(trailLayer){
 			var layer = null,
 				feature = null;
-			if(typeof trailLayer  === "string") {
+			if(typeof trailLayer  === 'string') {
 				$.each(mapModule.trailGroup._layers, function(key, l){
 					if(trailLayer === l.feature.properties.name) {
 						layer = l;
@@ -163,46 +170,45 @@ var mapModule = (function (window, document, L, undefined) {
 				feature = trailLayer.feature;
 			}
 			mapOptions.unhighlightLayer();
-			// prevent clicking then immediately changing color to black "on mouse out"
+			// prevent clicking then immediately changing color to darkblue "on mouse out"
 			layer.feature.properties.selected = true;
 			layer.setStyle({
-				color: "blue"
+				color: 'blue'
 			});
-			trailMenu.highlightMenuItem(feature.properties.name)
+			trailMenu.highlightMenuItem(feature.properties.name);
 
 		};
 		mapOptions.unhighlightLayer = function(){
 			mapOptions.trailGroup.eachLayer(function(layer){
 				layer.feature.properties.selected = false;
 				layer.setStyle({
-					color: "black"
-				})
+					color: 'darkblue'
+				});
 			});
 		};
 		mapOptions.previewColor = function(trailLayer){
-			$.each(mapOptions.trailGroup._layers, function(key, l){
-				if(typeof trailLayer  === "string") {
+			$.each(mapOptions.trailGroup._layers, function(){
+				if(typeof trailLayer  === 'string') {
 					$.each(mapOptions.trailGroup._layers, function (key, l) {
-						if (trailLayer === l.feature.properties.name) l.setStyle({color: "red"})
-					})
+						if (trailLayer === l.feature.properties.name) { l.setStyle({color: 'red'}); }
+					});
 				}
-
 			});
 		};
 		mapOptions.baseColor = function(){
-			var baseColor = "black";
+			var baseColor = 'darkblue';
 			mapOptions.trailGroup.eachLayer(function(layer){
-				layer.feature.properties.selected === true ?  baseColor = "blue": baseColor = "black";
+				layer.feature.properties.selected === true ?  baseColor = 'blue' : baseColor = 'darkblue';
 				layer.setStyle({
 					color: baseColor
-				})
+				});
 			});
 		};
 
 		mapOptions.showFeature = function(trailLayer){
 			var layer = null,
 				feature = null;
-			if(typeof trailLayer  === "string") {
+			if(typeof trailLayer  === 'string') {
 				$.each(mapOptions.trailGroup._layers, function(key, l){
 					if(trailLayer === l.feature.properties.name) {
 						layer = l;
@@ -218,7 +224,7 @@ var mapModule = (function (window, document, L, undefined) {
 			mapModule.elevationProfile.clear();
 			mapModule.elevationProfile.addData(feature, layer);
 			mapModule.elevationProfile.show();
-			mapOptions.map.fitBounds(layer.getBounds())
+			mapOptions.map.fitBounds(layer.getBounds());
 
 		};
 	return mapOptions;
@@ -227,11 +233,12 @@ var mapModule = (function (window, document, L, undefined) {
 
 
 var trailMenu = (function(){
+	var $ = window.$;
 	var options = {};
 
 	options.sidr = {opened: false};
 	options.sidr._isOpen = function() {
-		return options.sidr.opened
+		return options.sidr.opened;
 	};
 
 	var menu = $('#trail-menu-list');
@@ -251,17 +258,17 @@ var trailMenu = (function(){
 	options.closeMenu = function(){
 			options.sidr.opened = false;
 			$.sidr('close', 'sidr');
-		if($("#map").outerWidth() > 600) {
+		if($('#map').outerWidth() > 600) {
 			mapModule.elevationProfile.hide();
-			mapModule.map.fitBounds(mapModule.trailGroup.getBounds())
+			mapModule.map.fitBounds(mapModule.trailGroup.getBounds());
 		}
-		var menuItems = $("#trail-menu-list li");
+		var menuItems = $('#trail-menu-list li');
 		$.each(menuItems , function(){
 			options.collapseItem($(this).find('.menu-more-less'));
-		})
+		});
 	};
 	options.highlightMenuItem = function(trailName){
-		var elem = $("#trail-menu-list").find("[data-feature='" + trailName + "']").find('.menu-more-less');
+		var elem = $('#trail-menu-list').find("[data-feature='" + trailName + "']").find('.menu-more-less');
 		options.expandItem(elem);
 
 	};
@@ -273,30 +280,29 @@ var trailMenu = (function(){
 			'height': '48px'
 		},'fast');
 		$(elem).removeClass('fa-plus').addClass('fa-minus');
-		$(elem).parent().siblings().find('.menu-more-less').removeClass('fa-minus').addClass('fa-plus')
+		$(elem).parent().siblings().find('.menu-more-less').removeClass('fa-minus').addClass('fa-plus');
 	};
 	options.collapseItem = function(elem){
-		if($(elem).hasClass('fa-minus')) $(elem).parent().animate({'height': '48px'},'fast');
+		if($(elem).hasClass('fa-minus')) { $(elem).parent().animate({'height': '48px'},'fast'); }
 		$(elem).removeClass('fa-minus').addClass('fa-plus');
 	};
 	return options;
-}());
-
+}(window));
 $(document).on('click', '.menu-item', function(e){
-	if ($(e.target).hasClass('menu-more-less')) return false;
+	if ($(e.target).hasClass('menu-more-less')) { return false; }
 	mapModule.showFeature($(this).data('feature'));
 });
 $(document).on('mouseover', '.menu-item', function(){
-	mapModule.previewColor($(this).data('feature'))
+	mapModule.previewColor($(this).data('feature'));
 });
 $(document).on('mouseout', '.menu-item', function(){
-	mapModule.baseColor()
+	mapModule.baseColor();
 });
 $(document).on('click', '.menu-more-less.fa-plus', function(e){
-	trailMenu.expandItem(e.target)
+	trailMenu.expandItem(e.target);
 });
 $(document).on('click', '.menu-more-less.fa-minus', function(e){
-	trailMenu.collapseItem(e.target)
+	trailMenu.collapseItem(e.target);
 });
 
 $(document).on('click', function (e){
@@ -304,29 +310,21 @@ $(document).on('click', function (e){
 		trailLayer = $('.trail-menu-button'),
 		taillLayerNav = $('.trail-menu-button-nav'),
 		geolocateButton = $('.geolocate-button'),
-		container = $("#sidr");
-	if ((!container.is(e.target)
-			&& container.has(e.target).length === 0)
-			&& !elevationWindow && !trailLayer.is(e.target)
-			&& trailLayer.has(e.target).length === 0
-			&& !geolocateButton.is(e.target)
-			&& geolocateButton.has(e.target).length === 0
-			&& !taillLayerNav.is(e.target)
-			&& taillLayerNav.has(e.target).length === 0
-			&& trailMenu.sidr.opened)
+		container = $('#sidr');
+	if ((!container.is(e.target) && container.has(e.target).length === 0) && !elevationWindow && !trailLayer.is(e.target) && trailLayer.has(e.target).length === 0 && !geolocateButton.is(e.target) && geolocateButton.has(e.target).length === 0 && !taillLayerNav.is(e.target) && taillLayerNav.has(e.target).length === 0 && trailMenu.sidr.opened)
 	{
 		trailMenu.closeMenu();
 		mapModule.unhighlightLayer();
 	}
 });
-$(".trail-menu-button, .trail-menu-button-nav").on('click', function(e){
+$('.trail-menu-button, .trail-menu-button-nav').on('click', function(e){
 	e.preventDefault();
 	trailMenu.openMenu();
 });
-$(".geolocate-button").on('click', function(e) {
+$('.geolocate-button').on('click', function(e) {
 	e.preventDefault();
 	if(GeoLocation.canWatch) {
-		$(".geolocate-symbol").toggleClass('btn-active');
+		$('.geolocate-symbol').toggleClass('btn-active');
 		if(GeoLocation.watching !== false){
 			GeoLocation.stopWatching();
 		} else {
@@ -337,12 +335,12 @@ $(".geolocate-button").on('click', function(e) {
 	}
 });
 
-$(".sidr-close-button").on('click', function(e){
+$('.sidr-close-button').on('click', function(){
 	trailMenu.closeMenu();
 	mapModule.unhighlightLayer();
 });
 //initialize sidr
-$("#tmenu").sidr({
+$('#tmenu').sidr({
 	side: 'right',
 	displace: false
 });
@@ -363,17 +361,16 @@ $('#contactForm').submit(function(e){
 				'<div class="circle">&nbsp;</div>'+
 				'</div>'+
 				'</div>'
-			)
+			);
 		},
 		success:function(result){
 			var data = JSON.parse(result);
-			if(data.status == 200) {
-				$('#myModal .modal-body').html('<h4 class="email-sent text-center">Email Sent, thanks!</h4>')
+			if(data.status === 200) {
+				$('#myModal .modal-body').html('<h4 class="email-sent text-center">Email Sent, thanks!</h4>');
 			}
 		},
-		error: function(result){
-			$('#myModal .modal-body').html('<h4>Something went wrong</h4><br><span>Please refresh this page and try again.</span>')
-
+		error: function(){
+			$('#myModal .modal-body').html('<h4>Something went wrong</h4><br><span>Please refresh this page and try again.</span>');
 		}
 
 	});

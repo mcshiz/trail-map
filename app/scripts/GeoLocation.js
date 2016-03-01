@@ -1,7 +1,8 @@
 /**
  * Created by brianmccall on 2/14/16.
  */
-var GeoLocation = (function(callback) {
+var GeoLocation = function(callback, $, window) {
+
     var options = {
         enableHighAccuracy : true,
         timeout : 1500
@@ -12,13 +13,13 @@ var GeoLocation = (function(callback) {
         maximumAge: 0
     };
     function watchLocation() {
-        navigator.geolocation.watchPosition(success,error, watchOptions)
+        navigator.geolocation.watchPosition(success,error, watchOptions);
     }
     function error(err) {
         console.warn('ERROR(' + err.code + '): ' + err.message);
         GeoLocation.watching = false;
-        $('.geolocate-status').text(" Off");
-        $('.geolocate-symbol').removeClass("btn-active");
+        $('.geolocate-status').text(' Off');
+        $('.geolocate-symbol').removeClass('btn-active');
     }
     function success(position){
         GeoLocation.userLocation = {
@@ -26,29 +27,29 @@ var GeoLocation = (function(callback) {
             lng: position.coords.longitude };
         mapModule.updatePosition(position);
         GeoLocation.watching = position;
-        $('.geolocate-status').text(" On")
+        $('.geolocate-status').text(' On');
     }
     function stopWatching(){
         navigator.geolocation.clearWatch(GeoLocation.watching);
         GeoLocation.watching = false;
-        $('.geolocate-status').text(" Off")
+        $('.geolocate-status').text(' Off');
     }
     function getLocation(position) {
         console.log(position);
-        document.cookie = "geoLocation=true";
+        window.document.cookie = 'geoLocation=true';
         GeoLocation.userLocation = {
             lat: position.coords.latitude,
             lng: position.coords.longitude };
         GeoLocation.canWatch = true;
-        callback(window, document, L)
+        callback(window, window.document, L);
 
     }
     function fallback(error) {
-        console.log("GeoLocation Error:", error.message);
-        console.log("using double fallback location");
+        console.log('GeoLocation Error:', error.message);
+        console.log('using double fallback location');
 
         $.ajax({
-            dataType: "json",
+            dataType: 'json',
             url: '//freegeoip.net/json/',
             timeout: 1500,
 
@@ -57,18 +58,18 @@ var GeoLocation = (function(callback) {
                     lng: data.longitude,
                     lat: data.latitude
                 };
-                callback(window, document, L);
+                callback(window, window.document, L);
             },
             error: function() {
                 $.getJSON('http://ip-api.com/json', function (data) {
-                    console.log("super backup");
+                    console.log('super backup');
                     GeoLocation.userLocation = {
                         lng: data.lon,
                         lat: data.lat
                     };
-                    callback(window, document, L);
+                    callback(window, window.document, L);
 
-                })
+                });
             }
         });
     }
@@ -88,6 +89,6 @@ var GeoLocation = (function(callback) {
         watching: false,
         watchLocation: watchLocation,
         stopWatching: stopWatching
-    }
+    };
 
-});
+};
