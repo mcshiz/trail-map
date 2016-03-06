@@ -30,7 +30,7 @@ app.get(/^(.+)$/, function (req, res) {
             res.render('single', {
                 trailName: trailName,
                 rating: trailDetails.rating,
-                length: trailDetails["length"],
+                length: trailDetails['length'],
                 description: trailDetails.description,
                 difficulty: trailDetails.difficulty,
                 trailhead: trailDetails.trailhead

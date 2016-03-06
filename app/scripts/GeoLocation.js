@@ -1,7 +1,7 @@
 /**
  * Created by brianmccall on 2/14/16.
  */
-var GeoLocation = function(callback, $, window) {
+var GeoLocation = (function(callback, $, window) {
 
     var options = {
         enableHighAccuracy : true,
@@ -12,35 +12,41 @@ var GeoLocation = function(callback, $, window) {
         timeout: 5000,
         maximumAge: 0
     };
-    function watchLocation() {
+    var exports = {};
+    exports.canWatch = false;
+    exports.watching = false;
+    exports.watchLocation = function() {
         navigator.geolocation.watchPosition(success,error, watchOptions);
-    }
+    };
+    exports.stopWatching = function(){
+        navigator.geolocation.clearWatch(GeoLocation.watching);
+        exports.watching = false;
+        $('.geolocate-status').text(' Off');
+    };
     function error(err) {
         console.warn('ERROR(' + err.code + '): ' + err.message);
-        GeoLocation.watching = false;
+        exports.watching = false;
         $('.geolocate-status').text(' Off');
         $('.geolocate-symbol').removeClass('btn-active');
     }
     function success(position){
-        GeoLocation.userLocation = {
+        console.log(position)
+        mapModule.map.panTo(new L.LatLng(position.coords.latitude, position.coords.longitude));
+        exports.userLocation = {
             lat: position.coords.latitude,
             lng: position.coords.longitude };
         mapModule.updatePosition(position);
-        GeoLocation.watching = position;
+        exports.watching = position;
         $('.geolocate-status').text(' On');
     }
-    function stopWatching(){
-        navigator.geolocation.clearWatch(GeoLocation.watching);
-        GeoLocation.watching = false;
-        $('.geolocate-status').text(' Off');
-    }
-    function getLocation(position) {
+
+    exports.getLocation = function(position) {
         console.log(position);
         window.document.cookie = 'geoLocation=true';
-        GeoLocation.userLocation = {
+        exports.userLocation = {
             lat: position.coords.latitude,
             lng: position.coords.longitude };
-        GeoLocation.canWatch = true;
+        exports.canWatch = true;
         callback(window, window.document, L);
 
     }
@@ -54,7 +60,7 @@ var GeoLocation = function(callback, $, window) {
             timeout: 1500,
 
             success: function(data){
-                GeoLocation.userLocation = {
+                exports.userLocation = {
                     lng: data.longitude,
                     lat: data.latitude
                 };
@@ -74,21 +80,13 @@ var GeoLocation = function(callback, $, window) {
         });
     }
     if (navigator && navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(getLocation, fallback, options);
+        navigator.geolocation.getCurrentPosition(exports.getLocation, fallback, options);
     } else {
         fallback();
     }
 
-    return {
-        //setting default
-        userLocation : {
-            lng: -121.904297,
-            lat: 42.0390942
-        },
-        canWatch : false,
-        watching: false,
-        watchLocation: watchLocation,
-        stopWatching: stopWatching
-    };
+    return exports;
 
-};
+
+}(mapModule.init, $, window));
+

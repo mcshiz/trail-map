@@ -119,3 +119,13 @@ var commentModule = (function(){
 
     return options;
 }());
+var rating = $('.rating'),
+    a = Math.floor(rating.data('rating')),
+    b = rating.data('rating') - a,
+    full = '<span class="fa fa-star"></span>',
+    half = '<span class="fa fa-star-half"></span>';
+for(var i = a ; a > 0; i--){
+    $(rating).append(full);
+    --a;
+}
+if(b>0) $(rating).append(half);

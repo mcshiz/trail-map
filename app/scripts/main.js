@@ -28,7 +28,8 @@ var mapModule = (function (window, document, L, undefined) {
 		});
 
 		mapOptions.customLayer.addTo(mapOptions.map);
-		mapOptions.geolocationMarker = L.marker([GeoLocation.userLocation.lat, GeoLocation.userLocation.lng]).addTo(mapOptions.map);
+		mapOptions.geolocationMarker = L.marker([GeoLocation.userLocation.lat, GeoLocation.userLocation.lng], {icon: mapOptions.locationIcon}).addTo(mapOptions.map);
+		mapOptions.serviceLayer.addTo(mapOptions.map);
 		var count = 0;
 		mapOptions.trail.on('ready', function() {
 			count++;
@@ -86,6 +87,37 @@ var mapModule = (function (window, document, L, undefined) {
 		//});
 		//photoLayer.add(photos).addTo(map)
 
+	mapOptions.LocationIcon = L.Icon.Default.extend({
+		options: {
+			iconUrl: '/app/images/marker-icon-location.png',
+			iconSize: [15, 15],
+			iconAnchor: [0, 0],
+			shadowSize: [0, 0]
+		}
+	});
+	mapOptions.locationIcon = new mapOptions.LocationIcon();
+	mapOptions.RedIcon = L.Icon.Default.extend({
+		options: {
+			iconUrl: '/app/images/marker-icon-red.png'
+		}
+	});
+	mapOptions.redIcon = new mapOptions.RedIcon();
+
+
+	mapOptions.serviceMarkers = {
+			fifthseason : L.marker([41.313467, -122.312349], {icon: mapOptions.redIcon}).bindPopup("Shasta Base Camp"),
+			shastabasecamp : L.marker([41.311182, -122.310869], {icon: mapOptions.redIcon}).bindPopup("The Fifth Season"),
+			bikeshop : L.marker([41.312045, -122.312162], {icon: mapOptions.redIcon}).bindPopup("The Bike Shop")
+		};
+		mapOptions.serviceLayer = L.layerGroup();
+
+		mapOptions.addMarker = function(service){
+			mapOptions.serviceLayer.addLayer(mapOptions.serviceMarkers[service])
+		};
+		mapOptions.removeMarker = function(service){
+			if(service){mapOptions.serviceLayer.removeLayer(mapOptions.serviceMarkers[service]); return;}
+			mapOptions.serviceLayer.clearLayers()
+		};
 		mapOptions.updatePosition = function(){
 			mapOptions.map.removeLayer(mapOptions.geolocationMarker);
 			mapOptions.geolocationMarker.setLatLng([GeoLocation.userLocation.lat, GeoLocation.userLocation.lng]).addTo(mapOptions.map);
@@ -248,12 +280,11 @@ var trailMenu = (function(){
 			'<li class="menu-item" data-feature="'+trailName+'">'+trailName+
 			'<span class="fa fa-plus menu-more-less"></span>'+
 			'<a href="'+trailName+'" class="show-trail-details">View Details</a></li>';
-		$(menu).append(newListItem);
+		$(menu).prepend(newListItem);
 	};
 	options.openMenu = function(){
 			options.sidr.opened = true;
 			$.sidr('open', 'sidr');
-
 	};
 	options.closeMenu = function(){
 			options.sidr.opened = false;
@@ -275,10 +306,10 @@ var trailMenu = (function(){
 	options.expandItem = function(elem){
 		$(elem).parent().animate({
 			'height': '70px'
-		},'fast');
+		},'fast').addClass('highlighted');
 		$(elem).parent().siblings().animate({
 			'height': '48px'
-		},'fast');
+		},'fast').removeClass('highlighted');
 		$(elem).removeClass('fa-plus').addClass('fa-minus');
 		$(elem).parent().siblings().find('.menu-more-less').removeClass('fa-minus').addClass('fa-plus');
 	};
@@ -289,13 +320,31 @@ var trailMenu = (function(){
 	return options;
 }(window));
 $(document).on('click', '.menu-item', function(e){
-	if ($(e.target).hasClass('menu-more-less')) { return false; }
+	if($(e.target).hasClass('menu-more-less')) { return false; }
+	if($(e.target).hasClass('service')) {
+		$.each($(e.target).siblings('.selected'), function(){
+			console.log($(this).text());
+			$(this).removeClass('selected');
+			mapModule.removeMarker($(this).data('service'));
+		});
+		$(e.target).toggleClass('selected');
+
+		mapModule.addMarker($(e.target).data('service'));
+		return;
+	}
 	mapModule.showFeature($(this).data('feature'));
 });
-$(document).on('mouseover', '.menu-item', function(){
+$(document).on('mouseover', '.menu-item', function(e){
+	if($(e.target).hasClass('service')) {
+		mapModule.addMarker($(e.target).data('service'));
+		$(e.target).on('mouseout', function(){
+			if($(e.target).hasClass('selected')) {return;}
+				mapModule.removeMarker($(e.target).data('service'));
+		});
+		return;
+	}
 	mapModule.previewColor($(this).data('feature'));
-});
-$(document).on('mouseout', '.menu-item', function(){
+}).on('mouseout', '.menu-item', function() {
 	mapModule.baseColor();
 });
 $(document).on('click', '.menu-more-less.fa-plus', function(e){

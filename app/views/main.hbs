@@ -45,7 +45,7 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" href="#">Mount Shasta Bike Trails</a>
+            <a class="navbar-brand" href="/">Mount Shasta Bike Trails</a>
         </div>
         <!-- Collect the nav links, forms, and other content for toggling -->
         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
@@ -158,8 +158,15 @@
 
 <div id="sidr">
     <div class="sidr-close-button"><span class="fa fa-close"></span> Close</div>
-    <ul id="trail-menu-list"></ul>
+    <ul id="trail-menu-list">
+            <span class="services-divider">Local Bike Shops</span>
+            <li class="service menu-item" data-service="fifthseason">Fifth Season Sports<span class="fa fa-plus menu-more-less"></span><a href="http://thefifthseason.com/" target="_blank">Website</a></li>
+            <li class="service menu-item" data-service="shastabasecamp">Shasta Base Camp<span class="fa fa-plus menu-more-less"></span><a href="http://www.shastabasecamp.com/" target="_blank">Website</a></li>
+            <li class="service menu-item" data-service="bikeshop">The Bike shop<span class="fa fa-plus menu-more-less"></span><a href="http://www.yelp.com/biz/the-bike-store-mount-shasta" target="_blank">Website</a></li>
+    </ul>
 </div>
+
+
 
 
 <script src='//api.tiles.mapbox.com/mapbox.js/plugins/leaflet-omnivore/v0.2.0/leaflet-omnivore.min.js'></script>
@@ -187,54 +194,42 @@
 <script src="/app/scripts/GeoLocation.js"></script>
 <!-- endbuild -->
 
-<script src="//cdnjs.cloudflare.com/ajax/libs/require.js/2.0.6/require.min.js"></script>
+<!--<script src="//cdnjs.cloudflare.com/ajax/libs/require.js/2.0.6/require.min.js"></script>-->
 <script>
-    require(["http://shanimal.com/_js/jpegmeta.js"],function(jpegmeta){});
-    $("#filebtn").click(function(){
-        var files;
-        var exif;
-        var fbtn = $('<input type="file" multiple="multiple" accept="image/jpeg" />');
-        fbtn.unbind().on("change",function(){
-            function check(){
-                // check if each picture has lat & lon, alert users with filenames that don't
-//                if(_.reject(results,_.identity).length)
-//                    return;
-                console.log("Display EXIF data:",results);
-                console.log("Display EXIF data:",results[0].exif.gps.latitude.value);
-                console.log("Display EXIF data:",results[0].exif.gps.longitude.value);
-                console.log("Display EXIF data:",results[0].exif.tiff.DateTime.value);
-                $("#stdout").html("EXIF Data Retrieved. (See console for detailed information)")
-            }
-            files = $(this).get(0).files;
-            var results = new Array(files.length)
-            $.each(files,function(i, file){
-                var bin = new FileReader();
-                bin.onloadend = function(){
-                    var exif = new JpegMeta.JpegFile(this.result, this.file.name);
-                    results[i] = {file:file,exif:exif};
-                    check();
-                };
-                bin.file = file;
-                bin.readAsBinaryString(file);
-            })
-
-        });
-        fbtn.click()
-    })
-
+//    require(["http://shanimal.com/_js/jpegmeta.js"],function(jpegmeta){});
+//    $("#filebtn").click(function(){
+//        var files;
+//        var exif;
+//        var fbtn = $('<input type="file" multiple="multiple" accept="image/jpeg" />');
+//        fbtn.unbind().on("change",function(){
+//            function check(){
+//                // check if each picture has lat & lon, alert users with filenames that don't
+////                if(_.reject(results,_.identity).length)
+////                    return;
+//                console.log("Display EXIF data:",results);
+//                console.log("Display EXIF data:",results[0].exif.gps.latitude.value);
+//                console.log("Display EXIF data:",results[0].exif.gps.longitude.value);
+//                console.log("Display EXIF data:",results[0].exif.tiff.DateTime.value);
+//                $("#stdout").html("EXIF Data Retrieved. (See console for detailed information)")
+//            }
+//            files = $(this).get(0).files;
+//            var results = new Array(files.length)
+//            $.each(files,function(i, file){
+//                var bin = new FileReader();
+//                bin.onloadend = function(){
+//                    var exif = new JpegMeta.JpegFile(this.result, this.file.name);
+//                    results[i] = {file:file,exif:exif};
+//                    check();
+//                };
+//                bin.file = file;
+//                bin.readAsBinaryString(file);
+//            })
+//
+//        });
+//        fbtn.click()
+//    })
 
 </script>
-<script>
-    var rating = $('.rating'),
-        a = Math.floor(rating.data('rating')),
-        b = rating.data('rating') - a,
-        full = '<span class="fa fa-star"></span>',
-        half = '<span class="fa fa-star-half"></span>';
-    for(var i = a ; a > 0; i--){
-        $(rating).append(full);
-        --a;
-    }
-    if(b>0) $(rating).append(half);
-</script>
+
 </body>
 </html>

@@ -139,7 +139,8 @@ animation: scaleout 2.5s infinite ease-in-out;
 }
 .sidr ul li a {
 	padding-left: 0;
-	display: block;
+	display: inline-block;
+	line-height: 1em;
  	text-decoration: inherit;
 	color: rgb(0, 157, 255);
 
@@ -163,6 +164,7 @@ animation: scaleout 2.5s infinite ease-in-out;
 	border-top: inherit;
 	line-height: 28px;
 	box-shadow: inset 0px 0px 30px -5px rgba(56, 56, 56, 1);
+
 }
 .menu-more-less{
 	display: inline;
@@ -171,7 +173,32 @@ animation: scaleout 2.5s infinite ease-in-out;
 	background: transparent;
 	margin-right: 1em;
 }
-
+#trail-menu-list {
+	cursor: pointer;
+}
+#trail-menu-list li.highlighted, #trail-menu-list li.selected  {
+	background-color: rgb(70, 130, 180);
+	color: rgb(248, 248, 248);
+}
+#trail-menu-list li.highlighted a{
+	color: darkblue;
+}
+.service{
+	font-size: 0.8em;
+}
+.service a {
+	display: block !important;;
+	margin-top: 0.9em;
+}
+.services-divider {
+	display: block;
+	margin-top: 1em;
+	padding-top: 1em;
+	text-align: center;
+	border-bottom-color: rgb(223, 223, 223);
+	border-bottom-style: solid;
+	border-bottom-width: 1px;
+}
 canvas {
 	bottom: 0;
 	left: 0;

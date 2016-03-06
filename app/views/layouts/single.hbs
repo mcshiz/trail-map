@@ -40,8 +40,6 @@
 <script src="/app/scripts/comments.js"></script>
 <script>
     $(document).on('ready', function() {
-        GeoLocation(mapModule.init, $, window);
-
         $('#elevation-div').find('.elevation').addClass('leaflet-control');
         $('#loginform').submit(function (e) {
             e.preventDefault();
@@ -60,14 +58,14 @@
         });
         $('.enable-pan-button').on('click', function(){
             if($(this).hasClass('active')) {
-//                $(this).children(a).text("Disable Panning")
+                $(this).children('a').text('Enable Panning');
                 mapModule.map.dragging.disable();
                 mapModule.map.touchZoom.disable();
                 mapModule.map.doubleClickZoom.disable();
                 mapModule.map.scrollWheelZoom.disable();
                 mapModule.map.keyboard.disable();
             } else {
-//                $(this).children(a).text("Enable Panning");
+                $(this).children('a').text('Disable Panning');
                 mapModule.map.dragging.enable();
                 mapModule.map.touchZoom.enable();
                 mapModule.map.doubleClickZoom.enable();
