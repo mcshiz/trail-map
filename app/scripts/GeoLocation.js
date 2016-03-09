@@ -4,7 +4,7 @@
 var GeoLocation = (function(callback, $, window) {
     var options = {
         enableHighAccuracy : true,
-        timeout : 1500
+        timeout : 2000
     };
     var watchOptions =  {
         enableHighAccuracy: true,
@@ -65,7 +65,7 @@ var GeoLocation = (function(callback, $, window) {
                 callback(window, window.document, L);
             },
             error: function() {
-                $.getJSON('http://ip-api.com/json', function (data) {
+                $.getJSON('//ip-api.com/json', function (data) {
                     console.log('super backup');
                     GeoLocation.userLocation = {
                         lng: data.lon,
