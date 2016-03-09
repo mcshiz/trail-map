@@ -66,10 +66,10 @@ var GeoLocation = (function(callback, $, window) {
             },
             error: function() {
                 $.getJSON('//ip-api.com/json', function (data) {
-                    console.log('super backup');
+                    console.log('using default');
                     GeoLocation.userLocation = {
-                        lng: data.lon,
-                        lat: data.lat
+                        lng:  -122.3131737,
+                        lat: 41.3157
                     };
                     callback(window, window.document, L);
 
