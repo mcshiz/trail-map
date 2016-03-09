@@ -16,7 +16,7 @@ var mapModule = (function (window, document, L, undefined) {
 			$(canvas).remove();
 		});
 
-		new L.tileLayer('http://{s}.tile.stamen.com/terrain/{z}/{x}/{y}.png', {
+		new L.tileLayer('//{s}.tile.stamen.com/terrain/{z}/{x}/{y}.png', {
 			minZoom: 0,
 			maxZoom: 18,
 			attribution: 'Map data © <a href="http://www.openstreetmap.org">OpenStreetMap contributors</a>'
