@@ -6,7 +6,7 @@ var express = require('express'),
     nodemailer = require('nodemailer'),
     bodyParser = require('body-parser');
 
-var port = process.env.PORT || 3000;
+var port = process.env.PORT || 5000;
 var app = express();
 app.set('view engine', '.hbs');
 app.set('views', __dirname +'/app/views/layouts');
