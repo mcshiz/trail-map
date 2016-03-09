@@ -65,7 +65,6 @@ var GeoLocation = (function(callback, $, window) {
                 callback(window, window.document, L);
             },
             error: function() {
-                $.getJSON('//ip-api.com/json', function (data) {
                     console.log('using default');
                     GeoLocation.userLocation = {
                         lng:  -122.3131737,
@@ -73,7 +72,6 @@ var GeoLocation = (function(callback, $, window) {
                     };
                     callback(window, window.document, L);
 
-                });
             }
         });
     }
