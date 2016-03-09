@@ -2,7 +2,6 @@
  * Created by brianmccall on 2/14/16.
  */
 var GeoLocation = (function(callback, $, window) {
-
     var options = {
         enableHighAccuracy : true,
         timeout : 1500
@@ -39,7 +38,6 @@ var GeoLocation = (function(callback, $, window) {
         exports.watching = position;
         $('.geolocate-status').text(' On');
     }
-
     exports.getLocation = function(position) {
         console.log(position);
         window.document.cookie = 'geoLocation=true';
@@ -49,7 +47,7 @@ var GeoLocation = (function(callback, $, window) {
         exports.canWatch = true;
         callback(window, window.document, L);
 
-    }
+    };
     function fallback(error) {
         console.log('GeoLocation Error:', error.message);
         console.log('using double fallback location');
@@ -84,9 +82,6 @@ var GeoLocation = (function(callback, $, window) {
     } else {
         fallback();
     }
-
     return exports;
-
-
 }(mapModule.init, $, window));
 

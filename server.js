@@ -6,7 +6,7 @@ var express = require('express'),
     nodemailer = require('nodemailer'),
     bodyParser = require('body-parser');
 
-
+var port = process.env.PORT || 3000;
 var app = express();
 app.set('view engine', '.hbs');
 app.set('views', __dirname +'/app/views/layouts');
@@ -16,15 +16,14 @@ app.use('/app/', express.static(__dirname + '/app'));
 app.engine('.hbs', exphbs({partialsDir:__dirname +'/app/views/partials', layoutsDir: __dirname +'/app/views/' , defaultLayout: 'main.hbs', extname: '.hbs'}));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
+
 app.get('/', function (req, res) {
     res.render('index');
 });
 app.get(/^(.+)$/, function (req, res) {
     if (req.url != '/favicon.ico' && req.url != '/contact') {
         var trailName = decodeURI(req.url).replace("/", "");
-        console.log("https://shasta-bike-map.firebaseio.com/"+trailName+"/details")
         var ref = new Firebase("https://shasta-bike-map.firebaseio.com/"+trailName+"/details/");
-            var trailDetails = {};
         ref.once("value", function(snapshot) {
             var trailDetails = snapshot.val();
             res.render('single', {
@@ -38,8 +37,6 @@ app.get(/^(.+)$/, function (req, res) {
         });
     }
 });
-
-
 
 app.post('/contact', function (req, res) {
     var mailOpts, smtpTrans;
@@ -69,6 +66,6 @@ console.log(req.body);
 
 
 
-app.listen(3000, function () {
+app.listen(port, function () {
     console.log('express-handlebars example server listening on: 3000');
 });

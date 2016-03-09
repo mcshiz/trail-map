@@ -33,6 +33,7 @@ var mapModule = (function (window, document, L, undefined) {
 		var count = 0;
 		mapOptions.trail.on('ready', function() {
 			count++;
+			//wait for all layers to be loaded
 			if(count === mapOptions.fileArray.length ) {
 				if (window.location.pathname.match(/\/.+/)) {
 					mapModule.singleView = true;
@@ -51,41 +52,7 @@ var mapModule = (function (window, document, L, undefined) {
 				}
 			}
 		});
-
 	};
-
-
-
-
-
-
-
-
-
-		//geotag photo stuff
-
-		//var photos = [{
-		//	lng:-122.313225,
-		//	lat:41.31577222222222,
-		//	url:"http://i1.adis.ws/i/washford/01-bikes-mtb-thumbnail?$cat_nav$",
-		//	caption:"work bitch",
-		//	thumbnail:"http://i1.adis.ws/i/washford/01-bikes-mtb-thumbnail?$cat_nav$",
-		//	video: ""
-		//}];
-        //
-        //
-		//var photoLayer = L.photo.cluster().on('click', function (evt) {
-		//	var photo = evt.layer.photo,
-		//		template = '<img src="{url}"/></a><p>{caption}</p>';
-		//	if (photo.video && (!!document.createElement('video').canPlayType('video/mp4; codecs=avc1.42E01E,mp4a.40.2'))) {
-		//		template = '<video autoplay controls poster="{url}"><source src="{video}" type="video/mp4"/></video>';
-		//	};
-		//	evt.layer.bindPopup(L.Util.template(template, photo), {
-		//		className: 'leaflet-popup-photo',
-		//		minWidth: 400
-		//	}).openPopup();
-		//});
-		//photoLayer.add(photos).addTo(map)
 
 	mapOptions.LocationIcon = L.Icon.Default.extend({
 		options: {
@@ -267,12 +234,7 @@ var mapModule = (function (window, document, L, undefined) {
 var trailMenu = (function(){
 	var $ = window.$;
 	var options = {};
-
 	options.sidr = {opened: false};
-	options.sidr._isOpen = function() {
-		return options.sidr.opened;
-	};
-
 	var menu = $('#trail-menu-list');
 	options.addListitem = function(trail){
 		var trailName = trail.properties.name;
@@ -301,7 +263,6 @@ var trailMenu = (function(){
 	options.highlightMenuItem = function(trailName){
 		var elem = $('#trail-menu-list').find("[data-feature='" + trailName + "']").find('.menu-more-less');
 		options.expandItem(elem);
-
 	};
 	options.expandItem = function(elem){
 		$(elem).parent().animate({
@@ -322,27 +283,20 @@ var trailMenu = (function(){
 $(document).on('click', '.menu-item', function(e){
 	if($(e.target).hasClass('menu-more-less')) { return false; }
 	if($(e.target).hasClass('service')) {
-		$.each($(e.target).siblings('.selected'), function(){
-			console.log($(this).text());
-			$(this).removeClass('selected');
-			mapModule.removeMarker($(this).data('service'));
-		});
 		$(e.target).toggleClass('selected');
-
-		mapModule.addMarker($(e.target).data('service'));
+		$.each($('.service'), function(){
+			if($(this).hasClass('selected') === false) {
+				$(this).removeClass('selected');
+				mapModule.removeMarker($(this).data('service'));
+			} else {
+				mapModule.addMarker($(this).data('service'));
+			}
+		});
 		return;
 	}
 	mapModule.showFeature($(this).data('feature'));
 });
 $(document).on('mouseover', '.menu-item', function(e){
-	if($(e.target).hasClass('service')) {
-		mapModule.addMarker($(e.target).data('service'));
-		$(e.target).on('mouseout', function(){
-			if($(e.target).hasClass('selected')) {return;}
-				mapModule.removeMarker($(e.target).data('service'));
-		});
-		return;
-	}
 	mapModule.previewColor($(this).data('feature'));
 }).on('mouseout', '.menu-item', function() {
 	mapModule.baseColor();
@@ -354,21 +308,13 @@ $(document).on('click', '.menu-more-less.fa-minus', function(e){
 	trailMenu.collapseItem(e.target);
 });
 
-$(document).on('click', function (e){
-	var elevationWindow = $(e.target).parents('.elevation.leaflet-control').length > 0,
-		trailLayer = $('.trail-menu-button'),
-		taillLayerNav = $('.trail-menu-button-nav'),
-		geolocateButton = $('.geolocate-button'),
-		container = $('#sidr');
-	if ((!container.is(e.target) && container.has(e.target).length === 0) && !elevationWindow && !trailLayer.is(e.target) && trailLayer.has(e.target).length === 0 && !geolocateButton.is(e.target) && geolocateButton.has(e.target).length === 0 && !taillLayerNav.is(e.target) && taillLayerNav.has(e.target).length === 0 && trailMenu.sidr.opened)
-	{
-		trailMenu.closeMenu();
-		mapModule.unhighlightLayer();
-	}
-});
 $('.trail-menu-button, .trail-menu-button-nav').on('click', function(e){
 	e.preventDefault();
-	trailMenu.openMenu();
+	if(trailMenu.sidr.opened) {
+		trailMenu.closeMenu();
+	} else {
+		trailMenu.openMenu();
+	}
 });
 $('.geolocate-button').on('click', function(e) {
 	e.preventDefault();
@@ -388,13 +334,25 @@ $('.sidr-close-button').on('click', function(){
 	trailMenu.closeMenu();
 	mapModule.unhighlightLayer();
 });
-//initialize sidr
+//initialize sid menu
 $('#tmenu').sidr({
 	side: 'right',
 	displace: false
 });
+$('#contactForm').change(function(e){
+	$('.form-error').remove();
+});
 $('#contactForm').submit(function(e){
 	e.preventDefault();
+	var sendEmail = true;
+	$('#contactForm input, #contactForm textarea').each(function(){
+			if($(this).val() === ''){
+				$('.modal-body').prepend('<span class="text-danger form-error">* All Fields are required</span>');
+				sendEmail = false;
+				return false;
+			}
+	});
+	if(!sendEmail) {return false;}
 	$.ajax({
 		url:'/contact',
 		type:'post',
@@ -421,6 +379,5 @@ $('#contactForm').submit(function(e){
 		error: function(){
 			$('#myModal .modal-body').html('<h4>Something went wrong</h4><br><span>Please refresh this page and try again.</span>');
 		}
-
 	});
 });
