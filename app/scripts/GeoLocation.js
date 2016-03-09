@@ -29,8 +29,9 @@ var GeoLocation = (function(callback, $, window) {
         $('.geolocate-symbol').removeClass('btn-active');
     }
     function success(position){
-        console.log(position)
-        mapModule.map.panTo(new L.LatLng(position.coords.latitude, position.coords.longitude));
+        if(exports.watching === false) {
+            mapModule.map.panTo(new L.LatLng(position.coords.latitude, position.coords.longitude));
+        }
         exports.userLocation = {
             lat: position.coords.latitude,
             lng: position.coords.longitude };
